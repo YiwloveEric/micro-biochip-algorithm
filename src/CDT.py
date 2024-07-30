@@ -70,10 +70,8 @@ class chipCDT:
         """
         all_vec_arr = self.get_all_points()
         final_arr = self.get_all_triangles()
-        plt.triplot(
-            all_vec_arr[:, 0], all_vec_arr[:, 1], final_arr, color="blue", label="FT"
-        )
-        plt.scatter(all_vec_arr[:, 0], all_vec_arr[:, 1], color="red", label="Points")
+        plt.triplot(all_vec_arr[:, 0], all_vec_arr[:, 1], final_arr, label="FT")
+        plt.scatter(all_vec_arr[:, 0], all_vec_arr[:, 1], color="green", label="Points")
         plt.legend()
         plt.show()
 
