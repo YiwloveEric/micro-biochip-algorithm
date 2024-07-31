@@ -74,13 +74,16 @@ class Dataset:
         """
         return constrained edges which consist of obstacle in list
         """
-        verticle_list = []
+        verticle_list : list[list[list[int]]] = []
         _d_list, _f_list, _w_list = self.get_data()
         verticle_list += cal_four_verticles_v2(_d_list)
         verticle_list += cal_four_verticles_v2(_f_list)
         verticle_list += cal_four_verticles_v2(_w_list)
         verticle_list.append([[0, 70], [0, 0], [70, 0], [70, 70]])
         return verticle_list
+    
+    def process_data2array(self) -> np.ndarray:
+        return np.array(self.process_data2list())
 
     def write_fixed_data(self) -> tuple[str, np.ndarray, np.ndarray]:
         """
@@ -115,7 +118,7 @@ class Dataset:
         final_index_len = len(final_index)
 
         if os.path.exists(file_place):
-            print("file has been processed!")
+            print("[*] file has been processed!")
             return file_place, verticle_list, final_index
 
         else:
@@ -134,5 +137,5 @@ class Dataset:
 if __name__ == "__main__":
     data = Dataset(".\Data\data1.txt")
     # print(data.get_data())
-    print(data.write_fixed_data())
-    # print(data.process_data2list())
+    # print(data.write_fixed_data())
+    print(data.process_data2array().shape)
