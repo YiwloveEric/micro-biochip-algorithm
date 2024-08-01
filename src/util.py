@@ -28,13 +28,14 @@ def read_input_file(input_file):
         ]
         return verts, edges
 
-def get_compo_center(com_list:list[str]) -> np.ndarray:
+
+def get_compo_center(com_list: list[str]) -> np.ndarray:
     center_x = int(com_list[0])
     center_y = int(com_list[1])
-    return np.stack([center_x,center_y])
+    return np.stack([center_x, center_y])
 
 
-def cal_only_one_verticles(com_list:list[str]) -> np.ndarray:
+def cal_only_one_verticles(com_list: list[str]) -> np.ndarray:
     center_x = int(com_list[0])
     center_y = int(com_list[1])
     height = int(com_list[2])
@@ -54,14 +55,15 @@ def cal_only_one_verticles(com_list:list[str]) -> np.ndarray:
     right_down_ver_x = center_x + length / 2
     right_down_ver_y = center_y - height / 2
 
-    return  np.stack(
-                (
-                    [left_top_ver_x, left_top_ver_y],
-                    [left_down_ver_x, left_down_ver_y],
-                    [right_down_ver_x, right_down_ver_y],
-                    [right_top_ver_x, right_top_ver_y],
-                )
-            )
+    return np.stack(
+        (
+            [left_top_ver_x, left_top_ver_y],
+            [left_down_ver_x, left_down_ver_y],
+            [right_down_ver_x, right_down_ver_y],
+            [right_top_ver_x, right_top_ver_y],
+        )
+    )
+
 
 def cal_four_verticles(com_list: list[list[str]]) -> list[Path]:
     """

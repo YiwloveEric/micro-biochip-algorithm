@@ -72,7 +72,7 @@ class chipCDT:
         final_arr = self.get_all_triangles()
         plt.triplot(all_vec_arr[:, 0], all_vec_arr[:, 1], final_arr, label="CDT line")
         plt.scatter(all_vec_arr[:, 0], all_vec_arr[:, 1], color="green", label="Points")
-        plt.legend(loc='upper center')
+        plt.legend(loc="upper center")
         print("[*] draw the CDT and search SG graph successfully!")
         plt.show()
 

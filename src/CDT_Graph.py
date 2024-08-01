@@ -48,6 +48,10 @@ class SG_graph:
         self.tri = tri
         data = Dataset(data_path)
         self.constraint = data.process_data2array()
+        self.compo_center_dict, self.compo_dict = data.get_point_dict()
+        self.nearest_incomp, self.nearest_outcomp = data.process_input_data(
+            self.compo_center_dict
+        )
         self.cdt = chipCDT(data_path)
 
     def add_midpoint_to_SG(self) -> list[tuple[np.float64, np.float64]]:
@@ -103,10 +107,12 @@ class SG_graph:
         """
         points = self.graph.nodes()
         points_float = [(float(x), float(y)) for x, y in points]
-        plt.scatter(*zip(*points_float),color="red",label='midpoint',marker='*',s=100)
+        plt.scatter(
+            *zip(*points_float), color="red", label="midpoint", marker="*", s=100
+        )
         for edge in self.graph.edges():
             x_values, y_values = zip(*edge)  # 解包边的坐标
-            plt.plot(x_values, y_values, 'r--')
+            plt.plot(x_values, y_values, "r--")
         cdt.dispaly_cdt()
 
     def filter_valid_neutrality_edge(
