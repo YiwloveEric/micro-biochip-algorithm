@@ -10,9 +10,10 @@
 import os
 
 import numpy as np
+from scipy.spatial.distance import euclidean
 from matplotlib.path import Path
 
-from util import cal_four_verticles,cal_four_verticles_v2
+from util import cal_four_verticles,cal_four_verticles_v2,cal_only_one_verticles,get_compo_center
 
 DATA_DIR = "./Data/"
 
@@ -22,11 +23,157 @@ class Dataset:
     process the input data
     """
 
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str,input_path:str,ratio:float|np.float64) -> None:
         self.path: str = path
+        self.input_path : str = input_path
         self.f_list: list = []
         self.d_list: list = []
         self.w_list: list = []
+        self.ratio: float|np.float64 = ratio
+
+
+    def get_point_dict(self) -> tuple[dict[str,np.ndarray],dict[str,np.ndarray]]:
+        """
+        return center of the components and four verticles of the components
+        """
+        compo_dict:dict[str,np.ndarray] = {}
+        compo_center_dict:dict[str,np.ndarray] = {}
+        with open(self.path,mode='r',encoding='utf-8') as f:
+            content = f.read()
+            line : list = content.split('\n')
+            # print(line)
+            module: list[list[str]] = [mod.split("\t") for mod in line]
+            # print(module)
+            for lin in module:
+                comp_name :str = lin[0]
+                if comp_name not in compo_dict:
+                    compo_dict[comp_name] = cal_only_one_verticles(lin[1:])
+                    compo_center_dict[comp_name] = get_compo_center((lin[1:]))
+            # print(compo_dict)
+            # self.compo_dict = compo_dict
+        return compo_center_dict,compo_dict
+    
+    @staticmethod
+    def calculate_nearest_IO() -> None:
+        pass
+    
+    def process_input_data(self,compo_center_dict:dict[str,np.ndarray]) -> tuple[dict[str,str],dict[str,str]]:
+        """
+        calculate the nearest input components and output components
+        and return in a dict
+        """
+        # 存放每个组件相离最近的流入端口组件编号
+        nearest_incomp : dict = {}
+        # 存放每个组件相离最近的流出端口组件编号
+        nearest_outcomp : dict = {}
+        # 存放已经选择过的流入流出组件编号
+        chosen_comp : set = set()
+        with open(self.input_path,mode='r',encoding='utf-8') as f:
+            line = f.read().split('\n')
+            # print(line)
+            route_list : list[list[str]] = [rt.split('\t') for rt in line]
+            print(route_list)
+            for route in route_list:
+                route_len = len(route)
+                if route_len == 1:
+                    # 需要定义在loop外
+                    head_min_distance : np.ndarray = 200
+                    tail_min_distance : np.ndarray = 200
+                    for key in compo_center_dict.keys():
+                        # 计算流入模块距离
+                        if 'f' in key:
+                            head_comp :str = route[0]
+                            head_real_distance = euclidean(compo_center_dict[key],compo_center_dict[head_comp])
+                            if(head_real_distance < head_min_distance):
+                                # 需要尽可能减少流入端口的使用，使用阈值进行可操作性设定
+                                # 这里采用小于chip的len*ratio时,进行复用
+                                if len(chosen_comp)!=0 and key not in chosen_comp:
+                                    for chosen_key in chosen_comp:
+                                        if 'f' in chosen_key:
+                                            chosen_distance = euclidean(compo_center_dict[chosen_key],compo_center_dict[head_comp])
+                                            print('component:'+str(head_comp)+'\tchosen_key:'+chosen_key+'\t'+str(chosen_distance <= 70 * self.ratio))
+                                            if chosen_distance <= 70 * self.ratio:
+                                                nearest_incomp[head_comp] = chosen_key
+                                                break
+                                nearest_incomp[head_comp] = key
+                                head_min_distance = head_real_distance
+                                chosen_comp.add(key)
+                                print('key:' + str(key) + '\tcomp:' + str(head_comp) + '\tdistance:' + str(head_min_distance))
+                        # 计算流出模块距离
+                        if 'w' in key:
+                            tail_comp :str = route[0]
+                            # 这边要单独判断一下d*
+                            if '*' in tail_comp:
+                                # 先忽略处理
+                                tail_comp = tail_comp.replace('*','')
+                                # print(tail_comp)
+                            tail_real_distance = euclidean(compo_center_dict[key],compo_center_dict[tail_comp])
+                            if(tail_real_distance < tail_min_distance):
+                                # 需要尽可能减少流入端口的使用，使用阈值进行可操作性设定
+                                # 这里采用小于chip的len*ratio时,进行复用
+                                if len(chosen_comp)!=0 and key not in chosen_comp:
+                                    for chosen_key in chosen_comp:
+                                        if 'w' in chosen_key:
+                                            chosen_distance = euclidean(compo_center_dict[chosen_key],compo_center_dict[tail_comp])
+                                            print('component:'+str(tail_comp)+'\tchosen_key:'+chosen_key+'\t'+str(chosen_distance <= 70 * self.ratio))
+                                            if chosen_distance <= 70 * self.ratio:
+                                                nearest_outcomp[tail_comp] = chosen_key
+                                                break
+                                nearest_outcomp[tail_comp] = key
+                                tail_min_distance = tail_real_distance
+                                chosen_comp.add(key)
+                                print('key:' + str(key) + '\tcomp:' + str(tail_comp) + '\tdistance:' + str(tail_min_distance))
+                else:
+                    # 需要定义在loop外
+                    head_min_distance : np.ndarray = 200
+                    tail_min_distance : np.ndarray = 200
+                    for key in compo_center_dict.keys():
+                        # 计算流入模块距离
+                        if 'f' in key:
+                            head_comp :str = route[0]
+                            head_real_distance = euclidean(compo_center_dict[key],compo_center_dict[head_comp])
+                            if(head_real_distance < head_min_distance):
+                                # 需要尽可能减少流入端口的使用，使用阈值进行可操作性设定
+                                # 这里采用小于chip的len*ratio时,进行复用
+                                if len(chosen_comp)!=0 and key not in chosen_comp:
+                                    for chosen_key in chosen_comp:
+                                        if 'f' in chosen_key:
+                                            chosen_distance = euclidean(compo_center_dict[chosen_key],compo_center_dict[head_comp])
+                                            print('component:'+str(head_comp)+'\tchosen_key:'+chosen_key+'\t'+str(chosen_distance <= 70 * self.ratio))
+                                            if chosen_distance <= 70 * self.ratio:
+                                                nearest_incomp[head_comp] = chosen_key
+                                                break
+                                nearest_incomp[head_comp] = key
+                                head_min_distance = head_real_distance
+                                chosen_comp.add(key)
+                                print('key:' + str(key) + '\tcomp:' + str(head_comp) + '\tdistance:' + str(head_min_distance))
+                        # 计算流出模块距离
+                        if 'w' in key:
+                            tail_comp :str = route[-1]
+                            # 这边要单独判断一下d*
+                            if '*' in tail_comp:
+                                # 先忽略处理
+                                tail_comp = tail_comp.replace('*','')
+                                # print(tail_comp)
+                            tail_real_distance = euclidean(compo_center_dict[key],compo_center_dict[tail_comp])
+                            if(tail_real_distance < tail_min_distance):
+                                # 需要尽可能减少流入端口的使用，使用阈值进行可操作性设定
+                                # 这里采用小于chip的len*ratio时,进行复用
+                                if len(chosen_comp)!=0 and key not in chosen_comp:
+                                    for chosen_key in chosen_comp:
+                                        if 'w' in chosen_key:
+                                            chosen_distance = euclidean(compo_center_dict[chosen_key],compo_center_dict[tail_comp])
+                                            print('component:'+str(tail_comp)+'\tchosen_key:'+chosen_key+'\t'+str(chosen_distance <= 70 * self.ratio))
+                                            if chosen_distance <= 70 * self.ratio:
+                                                nearest_outcomp[tail_comp] = chosen_key
+                                                break
+                                nearest_outcomp[tail_comp] = key
+                                tail_min_distance = tail_real_distance
+                                chosen_comp.add(key)
+                                print('key:' + str(key) + '\tcomp:' + str(tail_comp) + '\tdistance:' + str(tail_min_distance))
+        # print(nearest_incomp)
+        # print(nearest_outcomp)
+        return nearest_incomp,nearest_outcomp
 
     def get_data(self) -> tuple[list, list, list]:
         """
@@ -135,7 +282,10 @@ class Dataset:
 
 
 if __name__ == "__main__":
-    data = Dataset(".\Data\data1.txt")
+    data = Dataset(".\Data\data1.txt",".\Data\input1.txt",0.6)
     # print(data.get_data())
     # print(data.write_fixed_data())
-    print(data.process_data2array().shape)
+    # print(data.process_data2array().shape)
+    compo_center_dict,compo_dict = data.get_point_dict()
+    # print(compo_center_dict)
+    data.process_input_data(compo_center_dict)

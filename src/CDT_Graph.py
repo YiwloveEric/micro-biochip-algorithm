@@ -187,12 +187,12 @@ class SG_graph:
 
 
 if __name__ == "__main__":
-    cdt = chipCDT("Data\data2.txt")
+    cdt = chipCDT("Data\data1.txt")
     points = cdt.get_all_points()
     triangles = cdt.get_all_triangles()
     # print(points.shape)
     # print(triangles.shape)
-    sg = SG_graph(points, triangles, ".\Data\data2.txt")
+    sg = SG_graph(points, triangles, ".\Data\data1.txt")
     sg.add_midpoint_to_SG()
     sg.add_egdes_to_SG()
     sg.draw_midpoint_and_neutrality()

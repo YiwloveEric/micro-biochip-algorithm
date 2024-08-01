@@ -28,6 +28,40 @@ def read_input_file(input_file):
         ]
         return verts, edges
 
+def get_compo_center(com_list:list[str]) -> np.ndarray:
+    center_x = int(com_list[0])
+    center_y = int(com_list[1])
+    return np.stack([center_x,center_y])
+
+
+def cal_only_one_verticles(com_list:list[str]) -> np.ndarray:
+    center_x = int(com_list[0])
+    center_y = int(com_list[1])
+    height = int(com_list[2])
+    length = int(com_list[3])
+
+    # calculate the left top verticle and left down verticle
+    left_top_ver_x = center_x - length / 2
+    left_top_ver_y = center_y + height / 2
+
+    left_down_ver_x = center_x - length / 2
+    left_down_ver_y = center_y - height / 2
+
+    # calculate the right top verticle and right down verticle
+    right_top_ver_x = center_x + length / 2
+    right_top_ver_y = center_y + height / 2
+
+    right_down_ver_x = center_x + length / 2
+    right_down_ver_y = center_y - height / 2
+
+    return  np.stack(
+                (
+                    [left_top_ver_x, left_top_ver_y],
+                    [left_down_ver_x, left_down_ver_y],
+                    [right_down_ver_x, right_down_ver_y],
+                    [right_top_ver_x, right_top_ver_y],
+                )
+            )
 
 def cal_four_verticles(com_list: list[list[str]]) -> list[Path]:
     """
@@ -116,4 +150,6 @@ if __name__ == "__main__":
     ]
     # [['5', '35', '5', '5'], ['45', '65', '5', '5'], ['65', '15', '5', '5']],
     # [['5', '45', '5', '5'], ['15', '5', '5', '5'], ['65', '35', '5', '5']]
-    print(cal_four_verticles_v2(test_input))
+    # print(cal_four_verticles_v2(test_input))
+    # print(cal_only_one_verticles(test_input[0]))
+    print(get_compo_center(test_input[0]))
