@@ -25,11 +25,11 @@ class chipCDT:
     construct the CDT
     """
 
-    def __init__(self, file_path: str,input_path: str,ratio: float) -> None:
+    def __init__(self, file_path: str, input_path: str, ratio: float) -> None:
         """
         init the CDT graph
         """
-        data = Dataset(file_path,input_path,ratio)
+        data = Dataset(file_path, input_path, ratio)
         process_data_path, _, _ = data.write_fixed_data()
 
         self.vv, self.ee = read_input_file(process_data_path)

@@ -14,12 +14,13 @@ from matplotlib.path import Path
 import PythonCDT as cdt
 
 
-def calculate_midpoint_with2points(points_pos:np.ndarray) -> tuple[np.float64,np.float64]:
-    point1 : np.ndarray = points_pos[0]
-    point2 : np.ndarray = points_pos[1]
-    midpoint : np.ndarray = (point1+point2)/2
+def calculate_midpoint_with2points(
+    points_pos: np.ndarray,
+) -> tuple[np.float64, np.float64]:
+    point1: np.ndarray = points_pos[0]
+    point2: np.ndarray = points_pos[1]
+    midpoint: np.ndarray = (point1 + point2) / 2
     return tuple(midpoint)
-
 
 
 def read_input_file(input_file):

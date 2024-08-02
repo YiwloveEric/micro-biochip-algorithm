@@ -132,15 +132,15 @@ class SG_graph:
         print("[*] add the midpoint and startarget edge to SG successfully!")
         return edges
 
-    def _add_midpoint_ver_to_SG(self,compo_dict):
+    def _add_midpoint_ver_to_SG(self, compo_dict):
         startarget_edges: list[
             tuple[tuple[np.float64, np.float64], tuple[np.float64, np.float64]]
         ] = []
         # startarget_dict: dict[str, np.ndarray] = {}
         # for key in compo_dict.keys():
-            # input_compo_key = nearest_comp[key]
-            # print(input_compo_key,compo_dict[input_compo_key])
-            # startarget_dict[input_compo_key] = compo_dict[input_compo_key]
+        # input_compo_key = nearest_comp[key]
+        # print(input_compo_key,compo_dict[input_compo_key])
+        # startarget_dict[input_compo_key] = compo_dict[input_compo_key]
         # print(start_dict)
 
         tri_list = []

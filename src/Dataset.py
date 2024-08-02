@@ -10,15 +10,11 @@
 import os
 
 import numpy as np
-from scipy.spatial.distance import euclidean
 from matplotlib.path import Path
+from scipy.spatial.distance import euclidean
 
-from util import (
-    cal_four_verticles,
-    cal_four_verticles_v2,
-    cal_only_one_verticles,
-    get_compo_center,
-)
+from util import (cal_four_verticles, cal_four_verticles_v2,
+                  cal_only_one_verticles, get_compo_center)
 
 DATA_DIR = "./Data/"
 
@@ -263,7 +259,7 @@ class Dataset:
                                 # )
         # print(nearest_incomp)
         # print(nearest_outcomp)
-        print('[*] nearest input and output construct successfully!')
+        print("[*] nearest input and output construct successfully!")
         return nearest_incomp, nearest_outcomp
 
     def get_data(self) -> tuple[list, list, list]:
