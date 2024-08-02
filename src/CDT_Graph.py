@@ -34,6 +34,7 @@ import networkx as nx
 import numpy as np
 
 from CDT import chipCDT
+from util import calculate_midpoint_with2points
 from Dataset import Dataset
 
 
@@ -42,17 +43,18 @@ class SG_graph:
     construct the searching graph by CDT
     """
 
-    def __init__(self, points: np.ndarray, tri: np.ndarray, data_path: str) -> None:
+    def __init__(self, points: np.ndarray, tri: np.ndarray, data_path: str,input_path: str,ratio: float) -> None:
         self.graph = nx.Graph()
         self.point = points
         self.tri = tri
-        data = Dataset(data_path)
+        self.input_path = input_path
+        data = Dataset(data_path,input_path,ratio)
         self.constraint = data.process_data2array()
         self.compo_center_dict, self.compo_dict = data.get_point_dict()
         self.nearest_incomp, self.nearest_outcomp = data.process_input_data(
             self.compo_center_dict
         )
-        self.cdt = chipCDT(data_path)
+        self.cdt = chipCDT(data_path,input_path,ratio)
 
     def add_midpoint_to_SG(self) -> list[tuple[np.float64, np.float64]]:
         """
@@ -98,8 +100,63 @@ class SG_graph:
         print("[*] add the neutrality edge to SG successfully!")
         return self.graph.edges()
 
-    def add_startarget_to_SG(self) -> None:
-        pass
+    def add_startarget_to_SG(self) -> tuple[list[tuple[tuple[np.float64, np.float64], tuple[np.float64, np.float64]]],list[tuple[tuple[np.float64, np.float64], tuple[np.float64, np.float64]]]]:
+        start_edges : list[tuple[tuple[np.float64, np.float64], tuple[np.float64, np.float64]]]= []
+        target_edges : list[tuple[tuple[np.float64, np.float64], tuple[np.float64, np.float64]]]= []
+        _ ,compo_dict= self.compo_center_dict, self.compo_dict
+        nearest_incomp ,nearest_outcomp = self.nearest_incomp, self.nearest_outcomp
+        # print(nearest_incomp)
+        # print(nearest_outcomp)
+        # 将有选择到的流入端口及其四个端点信息加入字典
+        start_edges = self._add_midpoint_ver_to_SG(nearest_incomp,compo_dict)
+        target_edges = self._add_midpoint_ver_to_SG(nearest_outcomp,compo_dict)
+        # print(start_edges)
+        # print()
+        # print(target_edges)
+        self.graph.add_edges_from(start_edges)
+        self.graph.add_edges_from(target_edges)
+        print("[*] add the midpoint and startarget edge to SG successfully!")
+        return start_edges,target_edges
+
+
+    def _add_midpoint_ver_to_SG(self,nearest_comp,compo_dict):
+        startarget_edges : list[tuple[tuple[np.float64, np.float64], tuple[np.float64, np.float64]]]= []
+        startarget_dict :dict[str,np.ndarray] = {}
+        for key in nearest_comp.keys():
+            input_compo_key = nearest_comp[key]
+            # print(input_compo_key,compo_dict[input_compo_key])
+            startarget_dict[input_compo_key] = compo_dict[input_compo_key]
+        # print(start_dict)
+
+        tri_list = []
+        # 预先提取所有的三角形顶点坐标位置
+        for t in self.tri:
+            tri_list.append(self.point[t])
+        # print(tri_list)
+
+        for start in startarget_dict.keys():
+            start_four_pos :np.ndarray = startarget_dict[start]
+            # print(start_four_pos)
+            for each_ver in start_four_pos:
+                for triangles in tri_list:
+                    # 判断该顶点被哪个三角形所包括
+                    if np.any(np.all(each_ver == triangles, axis=1)):
+                        # print(each_ver,triangles)
+                        # 提取出非该顶点的其他顶点计算该边中点
+                        mask = ~np.all(each_ver == triangles, axis=1)
+                        # 三角形其他顶点
+                        other_ver = triangles[mask]
+                        # print(other_ver)
+                        midpoint : tuple[np.float64,np.float64] = calculate_midpoint_with2points(other_ver)
+                        # print(midpoint)
+                        # 判断该点是否有在SG图中
+                        if self.graph.has_node(midpoint):
+                            float64_elements = tuple(np.float64(x) for x in each_ver)
+                            startarget_edges.append((float64_elements,midpoint))
+        # print(start_edges)
+        return startarget_edges
+
+
 
     def draw_midpoint_and_neutrality(self) -> None:
         """
@@ -108,7 +165,7 @@ class SG_graph:
         points = self.graph.nodes()
         points_float = [(float(x), float(y)) for x, y in points]
         plt.scatter(
-            *zip(*points_float), color="red", label="midpoint", marker="*", s=100
+            *zip(*points_float), color="red", label="midpoint", marker="*", s=50
         )
         for edge in self.graph.edges():
             x_values, y_values = zip(*edge)  # 解包边的坐标
@@ -193,12 +250,13 @@ class SG_graph:
 
 
 if __name__ == "__main__":
-    cdt = chipCDT("Data\data1.txt")
+    cdt = chipCDT("Data\data1.txt","Data\input1.txt",0.6)
     points = cdt.get_all_points()
     triangles = cdt.get_all_triangles()
     # print(points.shape)
     # print(triangles.shape)
-    sg = SG_graph(points, triangles, ".\Data\data1.txt")
+    sg = SG_graph(points, triangles, "Data\data1.txt","Data\input1.txt",0.6)
     sg.add_midpoint_to_SG()
     sg.add_egdes_to_SG()
+    sg.add_startarget_to_SG()
     sg.draw_midpoint_and_neutrality()

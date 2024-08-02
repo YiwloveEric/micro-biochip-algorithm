@@ -78,7 +78,7 @@ class Dataset:
             line = f.read().split("\n")
             # print(line)
             route_list: list[list[str]] = [rt.split("\t") for rt in line]
-            print(route_list)
+            # print(route_list)
             for route in route_list:
                 route_len = len(route)
                 if route_len == 1:
@@ -102,30 +102,30 @@ class Dataset:
                                                 compo_center_dict[chosen_key],
                                                 compo_center_dict[head_comp],
                                             )
-                                            print(
-                                                "component:"
-                                                + str(head_comp)
-                                                + "\tchosen_key:"
-                                                + chosen_key
-                                                + "\t"
-                                                + str(
-                                                    chosen_distance <= 70 * self.ratio
-                                                )
-                                            )
+                                            # print(
+                                            #     "component:"
+                                            #     + str(head_comp)
+                                            #     + "\tchosen_key:"
+                                            #     + chosen_key
+                                            #     + "\t"
+                                            #     + str(
+                                            #         chosen_distance <= 70 * self.ratio
+                                            #     )
+                                            # )
                                             if chosen_distance <= 70 * self.ratio:
                                                 nearest_incomp[head_comp] = chosen_key
                                                 break
                                 nearest_incomp[head_comp] = key
                                 head_min_distance = head_real_distance
                                 chosen_comp.add(key)
-                                print(
-                                    "key:"
-                                    + str(key)
-                                    + "\tcomp:"
-                                    + str(head_comp)
-                                    + "\tdistance:"
-                                    + str(head_min_distance)
-                                )
+                                # print(
+                                #     "key:"
+                                #     + str(key)
+                                #     + "\tcomp:"
+                                #     + str(head_comp)
+                                #     + "\tdistance:"
+                                #     + str(head_min_distance)
+                                # )
                         # 计算流出模块距离
                         if "w" in key:
                             tail_comp: str = route[0]
@@ -147,30 +147,30 @@ class Dataset:
                                                 compo_center_dict[chosen_key],
                                                 compo_center_dict[tail_comp],
                                             )
-                                            print(
-                                                "component:"
-                                                + str(tail_comp)
-                                                + "\tchosen_key:"
-                                                + chosen_key
-                                                + "\t"
-                                                + str(
-                                                    chosen_distance <= 70 * self.ratio
-                                                )
-                                            )
+                                            # print(
+                                            #     "component:"
+                                            #     + str(tail_comp)
+                                            #     + "\tchosen_key:"
+                                            #     + chosen_key
+                                            #     + "\t"
+                                            #     + str(
+                                            #         chosen_distance <= 70 * self.ratio
+                                            #     )
+                                            # )
                                             if chosen_distance <= 70 * self.ratio:
                                                 nearest_outcomp[tail_comp] = chosen_key
                                                 break
                                 nearest_outcomp[tail_comp] = key
                                 tail_min_distance = tail_real_distance
                                 chosen_comp.add(key)
-                                print(
-                                    "key:"
-                                    + str(key)
-                                    + "\tcomp:"
-                                    + str(tail_comp)
-                                    + "\tdistance:"
-                                    + str(tail_min_distance)
-                                )
+                                # print(
+                                #     "key:"
+                                #     + str(key)
+                                #     + "\tcomp:"
+                                #     + str(tail_comp)
+                                #     + "\tdistance:"
+                                #     + str(tail_min_distance)
+                                # )
                 else:
                     # 需要定义在loop外
                     head_min_distance: np.ndarray = 200
@@ -192,30 +192,30 @@ class Dataset:
                                                 compo_center_dict[chosen_key],
                                                 compo_center_dict[head_comp],
                                             )
-                                            print(
-                                                "component:"
-                                                + str(head_comp)
-                                                + "\tchosen_key:"
-                                                + chosen_key
-                                                + "\t"
-                                                + str(
-                                                    chosen_distance <= 70 * self.ratio
-                                                )
-                                            )
+                                            # print(
+                                            #     "component:"
+                                            #     + str(head_comp)
+                                            #     + "\tchosen_key:"
+                                            #     + chosen_key
+                                            #     + "\t"
+                                            #     + str(
+                                            #         chosen_distance <= 70 * self.ratio
+                                            #     )
+                                            # )
                                             if chosen_distance <= 70 * self.ratio:
                                                 nearest_incomp[head_comp] = chosen_key
                                                 break
                                 nearest_incomp[head_comp] = key
                                 head_min_distance = head_real_distance
                                 chosen_comp.add(key)
-                                print(
-                                    "key:"
-                                    + str(key)
-                                    + "\tcomp:"
-                                    + str(head_comp)
-                                    + "\tdistance:"
-                                    + str(head_min_distance)
-                                )
+                                # print(
+                                #     "key:"
+                                #     + str(key)
+                                #     + "\tcomp:"
+                                #     + str(head_comp)
+                                #     + "\tdistance:"
+                                #     + str(head_min_distance)
+                                # )
                         # 计算流出模块距离
                         if "w" in key:
                             tail_comp: str = route[-1]
@@ -237,32 +237,33 @@ class Dataset:
                                                 compo_center_dict[chosen_key],
                                                 compo_center_dict[tail_comp],
                                             )
-                                            print(
-                                                "component:"
-                                                + str(tail_comp)
-                                                + "\tchosen_key:"
-                                                + chosen_key
-                                                + "\t"
-                                                + str(
-                                                    chosen_distance <= 70 * self.ratio
-                                                )
-                                            )
+                                            # print(
+                                            #     "component:"
+                                            #     + str(tail_comp)
+                                            #     + "\tchosen_key:"
+                                            #     + chosen_key
+                                            #     + "\t"
+                                            #     + str(
+                                            #         chosen_distance <= 70 * self.ratio
+                                            #     )
+                                            # )
                                             if chosen_distance <= 70 * self.ratio:
                                                 nearest_outcomp[tail_comp] = chosen_key
                                                 break
                                 nearest_outcomp[tail_comp] = key
                                 tail_min_distance = tail_real_distance
                                 chosen_comp.add(key)
-                                print(
-                                    "key:"
-                                    + str(key)
-                                    + "\tcomp:"
-                                    + str(tail_comp)
-                                    + "\tdistance:"
-                                    + str(tail_min_distance)
-                                )
+                                # print(
+                                #     "key:"
+                                #     + str(key)
+                                #     + "\tcomp:"
+                                #     + str(tail_comp)
+                                #     + "\tdistance:"
+                                #     + str(tail_min_distance)
+                                # )
         # print(nearest_incomp)
         # print(nearest_outcomp)
+        print('[*] nearest input and output construct successfully!')
         return nearest_incomp, nearest_outcomp
 
     def get_data(self) -> tuple[list, list, list]:
