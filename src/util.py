@@ -14,6 +14,31 @@ from matplotlib.path import Path
 import PythonCDT as cdt
 
 
+def segment_dividers(point_a: tuple, point_b: tuple, n: int):
+    """
+    计算线段的n平分点坐标。
+
+    参数:
+    point_a (tuple): 第一个端点的坐标，格式为 (x, y)。
+    point_b (tuple): 第二个端点的坐标，格式为 (x, y)。
+    n (int): 分割线段的份数。
+
+    返回:
+    list: 分割点的坐标列表，每个元素是一个 (x, y) 元组。
+    """
+    x1, y1 = point_a
+    x2, y2 = point_b
+    dividers = []
+
+    for k in range(1, n):
+        # 计算分割点的坐标
+        x = x1 + (x2 - x1) * k / n
+        y = y1 + (y2 - y1) * k / n
+        dividers.append((x, y))
+
+    return dividers
+
+
 def calculate_midpoint_with2points(
     points_pos: np.ndarray,
 ) -> tuple[np.float64, np.float64]:

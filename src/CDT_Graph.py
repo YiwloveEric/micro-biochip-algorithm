@@ -35,7 +35,7 @@ import numpy as np
 
 from CDT import chipCDT
 from Dataset import Dataset
-from util import calculate_midpoint_with2points
+from util import calculate_midpoint_with2points, segment_dividers
 
 
 class SG_graph:
@@ -60,13 +60,15 @@ class SG_graph:
         self.nearest_incomp, self.nearest_outcomp = data.process_input_data(
             self.compo_center_dict
         )
+        self.terminal_to_mid = {}
+        self.has_count_lenth = set()
 
     def add_midpoint_to_SG(self) -> list[tuple[np.float64, np.float64]]:
         """
         add valid triangles' midpoint into searching SG graph
         """
         mid_point_list: list[tuple[np.float64, np.float64]] = (
-            SG_graph.calculate_tri_midpoint(self.point, self.tri)
+            self.calculate_tri_midpoint(self.point, self.tri)
         )
         self.graph.add_nodes_from(mid_point_list)
         # print(len(self.graph.nodes()))
@@ -244,9 +246,8 @@ class SG_graph:
                 bound_mid_list.append(tuple(bound_mid_point))
         return bound_mid_list
 
-    @staticmethod
     def calculate_tri_midpoint(
-        points: np.ndarray, tri: np.ndarray
+        self, points: np.ndarray, tri: np.ndarray
     ) -> list[tuple[np.float64, np.float64]]:
         """
         calculating the triangles' midpoint
@@ -260,6 +261,7 @@ class SG_graph:
                 point2: np.ndarray = each_tri[(idx + 1) % (len(each_tri))]
                 mid_point: np.ndarray = (point1 + point2) / 2
                 mid_point_list.append(tuple(mid_point))
+                self.terminal_to_mid[tuple(mid_point)] = (tuple(point1), tuple(point2))
         # print(mid_point_list)
         return mid_point_list
 
@@ -272,6 +274,13 @@ if __name__ == "__main__":
     sg.add_midpoint_to_SG()
     sg.add_egdes_to_SG()
     sg.add_startarget_to_SG()
-    sg.draw_midpoint_and_neutrality()
+    # for key,value in sg.terminal_to_mid.items():
+    #     print(key,value)
+    # 可以求出每个中点的两个端点
+    # print(sg.terminal_to_mid[(np.float64(60.0), np.float64(15.0))])
+    print(
+        segment_dividers(*sg.terminal_to_mid[(np.float64(60.0), np.float64(15.0))], 3)
+    )
+    # sg.draw_midpoint_and_neutrality()
     # for current in list(sg.graph.neighbors((np.float64(6.25), np.float64(3.75)))):
     #     print(current)

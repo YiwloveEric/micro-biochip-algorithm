@@ -13,8 +13,12 @@ import numpy as np
 from matplotlib.path import Path
 from scipy.spatial.distance import euclidean
 
-from util import (cal_four_verticles, cal_four_verticles_v2,
-                  cal_only_one_verticles, get_compo_center)
+from util import (
+    cal_four_verticles,
+    cal_four_verticles_v2,
+    cal_only_one_verticles,
+    get_compo_center,
+)
 
 DATA_DIR = "./Data/"
 
@@ -369,9 +373,9 @@ class Dataset:
 
 
 if __name__ == "__main__":
-    data = Dataset(".\Data\data1.txt", ".\Data\input1.txt", 0.6)
+    data = Dataset(".\Data\data6.txt", ".\Data\input6.txt", 0.6)
     # print(data.get_data())
-    # print(data.write_fixed_data())
+    print(data.write_fixed_data())
     # print(data.process_data2array().shape)
     compo_center_dict, compo_dict = data.get_point_dict()
     # print(compo_center_dict)
